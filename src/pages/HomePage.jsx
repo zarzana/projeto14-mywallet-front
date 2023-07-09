@@ -1,37 +1,58 @@
 import styled from "styled-components"
 import { BiExit } from "react-icons/bi"
 import { AiOutlineMinusCircle, AiOutlinePlusCircle } from "react-icons/ai"
+import axios from "axios";
+import { useEffect, useState } from "react";
+import dayjs from "dayjs";
 
 export default function HomePage() {
+
+  const config = { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } };
+  const name = localStorage.getItem('name');
+
+  const [records, setRecords] = useState([]);
+
+  const getRecords = () => {
+    const URL = `${import.meta.env.VITE_API_URL}/records`;
+    const request = axios.get(URL, config);
+    request
+      .then((res) => {
+        setRecords(res.data);
+      })
+      .catch((error) => { alert(error.response.data) });
+  };
+
+  useEffect(getRecords, []);
+
+  let balance = 0;
+  records.forEach(record => {
+    if (record.type === 'in') { balance += Number(record.value) }
+    else { balance -= record.value }
+  });
+
   return (
     <HomeContainer>
       <Header>
-        <h1>Olá, Fulano</h1>
+        <h1>Olá, {name}</h1>
         <BiExit />
       </Header>
 
       <TransactionsContainer>
         <ul>
-          <ListItemContainer>
-            <div>
-              <span>30/11</span>
-              <strong>Almoço mãe</strong>
-            </div>
-            <Value color={"negativo"}>120,00</Value>
-          </ListItemContainer>
-
-          <ListItemContainer>
-            <div>
-              <span>15/11</span>
-              <strong>Salário</strong>
-            </div>
-            <Value color={"positivo"}>3000,00</Value>
-          </ListItemContainer>
+          {records.map(record => (
+            <ListItemContainer key={record._id}>
+              <div>
+                <span>{dayjs.unix(record.timestamp).format('DD-MM')}</span>
+                <strong>{record.description}</strong>
+              </div>
+              <Value color={record.type == 'in' ? 'positivo' : 'negativo'}>{(Math.round(record.value * 100) / 100).toFixed(2)}</Value>
+            </ListItemContainer>
+          ))}
         </ul>
 
         <article>
           <strong>Saldo</strong>
-          <Value color={"positivo"}>2880,00</Value>
+          <Value color={balance >= 0 ? 'positivo' : 'negativo'}>{(Math.round(balance * 100) / 100).toFixed(2)}</Value>
         </article>
       </TransactionsContainer>
 
@@ -49,6 +70,7 @@ export default function HomePage() {
 
     </HomeContainer>
   )
+
 }
 
 const HomeContainer = styled.div`
