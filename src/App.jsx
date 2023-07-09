@@ -6,6 +6,7 @@ import SignUpPage from "./pages/SignUpPage"
 import TransactionsPage from "./pages/TransactionPage"
 
 export default function App() {
+
   return (
     <PagesContainer>
       <BrowserRouter>
@@ -18,6 +19,7 @@ export default function App() {
       </BrowserRouter>
     </PagesContainer>
   )
+
 }
 
 const PagesContainer = styled.main`
