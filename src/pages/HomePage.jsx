@@ -15,6 +15,10 @@ export default function HomePage() {
 
   const [records, setRecords] = useState([]);
 
+  const roundNumber = (num) => {
+    return (Math.round(num * 100) / 100).toFixed(2).replace('.', ',')
+  };
+  
   const getRecords = () => {
     const URL = `${import.meta.env.VITE_API_URL}/records`;
     const request = axios.get(URL, config);
@@ -49,7 +53,7 @@ export default function HomePage() {
                 <strong data-test="registry-name">{record.description}</strong>
               </div>
               <Value color={record.type == 'in' ? 'positivo' : 'negativo'} data-test="registry-amount">
-                {(Math.round(record.value * 100) / 100).toFixed(2)}
+                {roundNumber(record.value)}
               </Value>
             </ListItemContainer>
           ))}
@@ -57,9 +61,7 @@ export default function HomePage() {
 
         <article>
           <strong>Saldo</strong>
-          <Value color={balance >= 0 ? 'positivo' : 'negativo'} data-test="total-amount">
-            {(Math.round(balance * 100) / 100).toFixed(2)}
-          </Value>
+          <Value color={balance >= 0 ? 'positivo' : 'negativo'} data-test="total-amount">{roundNumber(balance)}</Value>
         </article>
       </TransactionsContainer>
 
