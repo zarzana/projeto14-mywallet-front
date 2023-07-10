@@ -4,8 +4,11 @@ import { AiOutlineMinusCircle, AiOutlinePlusCircle } from "react-icons/ai"
 import axios from "axios";
 import { useEffect, useState } from "react";
 import dayjs from "dayjs";
+import { useNavigate } from "react-router-dom";
 
 export default function HomePage() {
+
+  const navigate = useNavigate();
 
   const config = { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } };
   const name = localStorage.getItem('name');
@@ -42,7 +45,7 @@ export default function HomePage() {
           {records.map(record => (
             <ListItemContainer key={record._id}>
               <div>
-                <span>{dayjs.unix(record.timestamp).format('DD-MM')}</span>
+                <span>{dayjs.unix(record.timestamp).format('DD/MM')}</span>
                 <strong>{record.description}</strong>
               </div>
               <Value color={record.type == 'in' ? 'positivo' : 'negativo'}>{(Math.round(record.value * 100) / 100).toFixed(2)}</Value>
@@ -58,11 +61,11 @@ export default function HomePage() {
 
 
       <ButtonsContainer>
-        <button>
+        <button onClick={() => navigate('/nova-transacao/entrada')}>
           <AiOutlinePlusCircle />
           <p>Nova <br /> entrada</p>
         </button>
-        <button>
+        <button onClick={() => navigate('/nova-transacao/saida')}>
           <AiOutlineMinusCircle />
           <p>Nova <br />saída</p>
         </button>
