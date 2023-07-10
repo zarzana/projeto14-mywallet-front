@@ -36,8 +36,8 @@ export default function HomePage() {
   return (
     <HomeContainer>
       <Header>
-        <h1>Olá, {name}</h1>
-        <BiExit />
+        <h1 data-test="user-name">Olá, {name}</h1>
+        <BiExit data-test="logout" />
       </Header>
 
       <TransactionsContainer>
@@ -46,26 +46,30 @@ export default function HomePage() {
             <ListItemContainer key={record._id}>
               <div>
                 <span>{dayjs.unix(record.timestamp).format('DD/MM')}</span>
-                <strong>{record.description}</strong>
+                <strong data-test="registry-name">{record.description}</strong>
               </div>
-              <Value color={record.type == 'in' ? 'positivo' : 'negativo'}>{(Math.round(record.value * 100) / 100).toFixed(2)}</Value>
+              <Value color={record.type == 'in' ? 'positivo' : 'negativo'} data-test="registry-amount">
+                {(Math.round(record.value * 100) / 100).toFixed(2)}
+              </Value>
             </ListItemContainer>
           ))}
         </ul>
 
         <article>
           <strong>Saldo</strong>
-          <Value color={balance >= 0 ? 'positivo' : 'negativo'}>{(Math.round(balance * 100) / 100).toFixed(2)}</Value>
+          <Value color={balance >= 0 ? 'positivo' : 'negativo'} data-test="total-amount">
+            {(Math.round(balance * 100) / 100).toFixed(2)}
+          </Value>
         </article>
       </TransactionsContainer>
 
 
       <ButtonsContainer>
-        <button onClick={() => navigate('/nova-transacao/entrada')}>
+        <button onClick={() => navigate('/nova-transacao/entrada')} data-test="new-income">
           <AiOutlinePlusCircle />
           <p>Nova <br /> entrada</p>
         </button>
-        <button onClick={() => navigate('/nova-transacao/saida')}>
+        <button onClick={() => navigate('/nova-transacao/saida')} data-test="new-expense">
           <AiOutlineMinusCircle />
           <p>Nova <br />saída</p>
         </button>
