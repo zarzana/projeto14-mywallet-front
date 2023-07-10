@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components"
 import axios from "axios";
@@ -9,6 +9,8 @@ export default function TransactionsPage() {
   if (tipo == 'saida') { tipo = 'saída' }
 
   const navigate = useNavigate();
+
+  useEffect(() => { if (!localStorage.getItem('token')) { navigate('/'); } }, []);
 
   const config = { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } };
 
@@ -21,7 +23,10 @@ export default function TransactionsPage() {
     const request = axios.post(URL, { 'value': value, 'description': description, 'type': tipo == 'entrada' ? 'in' : 'out' }, config);
     request
       .then((res) => { navigate('/home'); })
-      .catch((error) => { alert(error.response.data) });
+      .catch((error) => {
+        if (error.response.status  == 401) { navigate('/') }
+        else { alert(error.response.data) };
+      });
   }
 
   return (

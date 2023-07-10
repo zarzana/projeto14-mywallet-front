@@ -4,11 +4,13 @@ import { AiOutlineMinusCircle, AiOutlinePlusCircle } from "react-icons/ai"
 import axios from "axios";
 import { useEffect, useState } from "react";
 import dayjs from "dayjs";
-import { useNavigate } from "react-router-dom";
+import { redirect, useNavigate } from "react-router-dom";
 
 export default function HomePage() {
 
   const navigate = useNavigate();
+
+  useEffect(() => { if (!localStorage.getItem('token')) { navigate('/'); } }, []);
 
   const config = { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } };
   const name = localStorage.getItem('name');
@@ -18,7 +20,7 @@ export default function HomePage() {
   const roundNumber = (num) => {
     return (Math.round(num * 100) / 100).toFixed(2).replace('.', ',')
   };
-  
+
   const getRecords = () => {
     const URL = `${import.meta.env.VITE_API_URL}/records`;
     const request = axios.get(URL, config);
@@ -26,10 +28,19 @@ export default function HomePage() {
       .then((res) => {
         setRecords(res.data);
       })
-      .catch((error) => { alert(error.response.data) });
+      .catch((error) => {
+        if (error.response.status == 401) { navigate('/') }
+        else { alert(error.response.data) };
+      });
   };
 
   useEffect(getRecords, []);
+
+  const logOut = () => {
+    localStorage.removeItem('name');
+    localStorage.removeItem('token');
+    navigate('/');
+  };
 
   let balance = 0;
   records.forEach(record => {
@@ -41,7 +52,7 @@ export default function HomePage() {
     <HomeContainer>
       <Header>
         <h1 data-test="user-name">Olá, {name}</h1>
-        <BiExit data-test="logout" />
+        <BiExit data-test="logout" onClick={logOut} />
       </Header>
 
       <TransactionsContainer>
